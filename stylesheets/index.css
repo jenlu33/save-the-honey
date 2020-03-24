@@ -4,3 +4,22 @@ body {
   /* color: white; */
   font-family: Arial, Helvetica, sans-serif;
 }
+
+rect {
+  fill: white;
+  stroke: black;
+}
+
+text {
+  font-size: 14px;
+  /* color: white; */
+}
+
+/* .tick text {
+ fill: darkgray
+} */
+
+.tick line {
+  stroke: lightblue;
+}
+
