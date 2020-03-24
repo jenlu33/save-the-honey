@@ -1,37 +1,38 @@
-import { select, arc } from 'd3';
+import { select, csv, scaleLinear, max, scaleBand } from 'd3';
 
 const svg = select('svg');
 // svg.style('background-color', 'red');
-const height = +svg.attr('height');
 const width = +svg.attr('width');
-const g = svg.append('g')
-  .attr('transform', `translate(${width / 2}, ${height / 2 + 40})`);
+const height = +svg.attr('height');
 
-  const circle = g.append('circle')
-  .attr('r', height/2)
-  .attr('fill', 'yellow')
-  .attr('stroke', 'black')
+const render = data => {
+  const xValue = d => d.Population;
+  const yValue = d => d.Country;
+  const margin = { top: 50, right: 50, bottom: 50, left: 50 };
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
 
-const eyeSpacing = 120;
-const eyeOffSet = -30;
-const eyeRadius = 25;
+  const xScale = scaleLinear()
+    .domain([0, max(data, xValue )])
+    .range([0, innerWidth])
 
-const leftEye = g.append('circle')
-  .attr('r', eyeRadius)
-  .attr('cx', -eyeSpacing)
-  .attr('cy', eyeOffSet)
+  const yScale = scaleBand()
+    .domain(data.map(yValue))
+    .range([0, innerHeight]);
 
-const rightEye = g.append('circle')
-  .attr('r', eyeRadius)
-  .attr('cx', +eyeSpacing)
-  .attr('cy', eyeOffSet)
-  .transition().duration(2000)
-    .attr('y', eyeOffSet - 20 )
+  const g = svg.append('g')
+    .attr('transform', `translate(${margin.left}, ${margin.top})`)
+  
+  g.selectAll('rect').data(data)
+    .enter().append('rect')
+      .attr('y', d => yScale(yValue(d)))
+      .attr('width', d => xScale(xValue(d)))
+      .attr('height', yScale.bandwidth())
+}
 
-const mouth = g.append('path')
-  .attr('d', arc()({
-    innerRadius:80,
-    outerRadius: 100,
-    startAngle: Math.PI/2,
-    endAngle: Math.PI * 3/2
-  }));
+csv('data.csv').then(data => {
+  data.forEach(d => {
+    d.Population = +d.Population
+  })
+  render(data);
+});
