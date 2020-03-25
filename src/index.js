@@ -2,12 +2,12 @@ import {
   select, 
   csv, 
   scaleLinear,
-  scaleTime,
+  format,
   extent, 
   axisLeft, 
   axisBottom,
   line,
-  curveBasis
+  curveBasis,
 } from 'd3';
 
 const svg = select('svg');
@@ -16,13 +16,12 @@ const width = +svg.attr('width');
 const height = +svg.attr('height');
 
 const render = data => {
-  const title = 'Bee Populations';
+  const title = 'Bee Populations(in Thousands)';
 
   const xValue = d => d.year;
   const xAxisLabel = 'Year'
 
   const yValue = d => d.total;
-  // const circleRadius = 5;
   const yAxisLabel = 'Total';
 
   const margin = { top: 50, right: 50, bottom: 80, left: 80};
@@ -46,7 +45,11 @@ const render = data => {
     .tickSize(-innerHeight)
     .tickPadding(10);
 
+  const yAxisTickFormat = num =>
+    format('~s')(num)
+
   const yAxis = axisLeft(yScale)
+    .tickFormat(yAxisTickFormat)
     .tickSize(-innerWidth)
     .tickPadding(10);
 
@@ -84,16 +87,15 @@ const render = data => {
     .attr('class', 'line-path')
     .attr('d', lineGenerator(data));
 
-  const totalLength = yPath.node().getTotalLength()
 
-  console.log(yPath);
-  
+  // line animation
+  const totalLength = yPath.node().getTotalLength()
 
   yPath
     .attr('stroke-dasharray', totalLength + ' ' + totalLength)
-    .attr('stroke-dashoffset', totalLength)
+    .attr('stroke-dashoffset', -totalLength) //starting point on left side
     .transition()
-      .duration(5000)
+      .duration(3000)
       .attr('stroke-dashoffset', 0)
 
 
