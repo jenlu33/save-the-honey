@@ -1,12 +1,13 @@
 import { 
   select, 
   csv, 
-  scaleLinear, 
-  max, 
-  scalePoint, 
+  scaleLinear,
+  scaleTime,
+  extent, 
   axisLeft, 
   axisBottom,
-  format
+  line,
+  curveBasis
 } from 'd3';
 
 const svg = select('svg');
@@ -15,67 +16,112 @@ const width = +svg.attr('width');
 const height = +svg.attr('height');
 
 const render = data => {
-  const xValue = d => d.num_colonies;
-  const yValue = d => d.state;
-  const margin = { top: 50, right: 50, bottom: 50, left: 200 };
+  const title = 'Bee Populations';
+
+  const xValue = d => d.year;
+  const xAxisLabel = 'Year'
+
+  const yValue = d => d.total;
+  // const circleRadius = 5;
+  const yAxisLabel = 'Total';
+
+  const margin = { top: 50, right: 50, bottom: 80, left: 80};
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
-  
 
   const xScale = scaleLinear()
-    .domain([0, max(data, xValue )])
+    .domain(extent(data, xValue))
     .range([0, innerWidth])
+    // .nice();
+
+  const yScale = scaleLinear()
+    .domain(extent(data, yValue))
+    .range([innerHeight, 0])
     .nice();
-    
 
-  const yScale = scalePoint()
-    .domain(data.map(yValue))
-    .range([0, innerHeight])
-    .padding(0.3);
-    
   const g = svg.append('g')
-    .attr('transform', `translate(${margin.left}, ${margin.top})`)
+    .attr('transform', `translate(${margin.left}, ${margin.right})`);
 
+  const xAxis = axisBottom(xScale)
+    .tickSize(-innerHeight)
+    .tickPadding(10);
 
   const yAxis = axisLeft(yScale)
     .tickSize(-innerWidth)
+    .tickPadding(10);
 
-  g.append('g')
-    .call(yAxis)
-    .select(`.domain`)
-      .remove();
+  const yAxisG = g.append('g').call(yAxis);
+  yAxisG.selectAll('domain').remove();
 
-  const xAxis = axisBottom(xScale)
-    .tickFormat(format('.3s'))
-    .tickSize(-innerHeight)
-      
+  // y-axis title
+  yAxisG.append('text')
+    .attr('y', -60)
+    .attr('x', -innerHeight / 2)
+    .attr('fill', 'black')
+    .attr('transform', `rotate(-90)`)
+    .attr('text-anchor', 'middle')
+    .text(yAxisLabel);
+
   const xAxisG = g.append('g').call(xAxis)
-    .attr('transform', `translate(0, ${innerHeight})`)
-    
-  xAxisG.select('.domain').remove();
+    .attr('transform', `translate(0, ${innerHeight})`);
+  
+  xAxisG.select('domain').remove();
 
+  // x-axis title
   xAxisG.append('text')
-    .attr('y', 40)
+    .attr('y', 60)
     .attr('x', innerWidth / 2)
     .attr('fill', 'black')
-    .text('Population')
+    .text(xAxisLabel);
 
-  g.selectAll('circle').data(data)
-    .enter().append('circle')
-    .attr('cy', d => yScale(yValue(d)))
-      .attr('cx', d => xScale(xValue(d)))
-      .attr('r', 6)
+  const lineGenerator = line()
+    .x(d => xScale(xValue(d)))
+    .y(d => yScale(yValue(d)))
+    .curve(curveBasis);
+    // .curve(curveMonotoneX);
+
+  const yPath = g.append('path')
+    .attr('class', 'line-path')
+    .attr('d', lineGenerator(data));
+
+  const totalLength = yPath.node().getTotalLength()
+
+  console.log(yPath);
+  
+
+  yPath
+    .attr('stroke-dasharray', totalLength + ' ' + totalLength)
+    .attr('stroke-dashoffset', totalLength)
+    .transition()
+      .duration(5000)
+      .attr('stroke-dashoffset', 0)
+
 
   g.append('text')
+    .attr('class', 'title')
     .attr('y', -10)
-    .text('Bee Populations');
-
+    .text(title);
 }
 
 
-csv('./data/data.csv').then(data => {
+csv('./data/yearly_pop.csv').then(data => {
+  // data.forEach(d => {
+  //   const year = Object.keys(d)
+  //   d.years = +d.years
+  // })
+
+  
+  // console.log(Object.values(data));
+  // console.log(data.columns.slice(1));
+
+  // data.columns.slice(1).forEach(year => {
+  //   year = +year
+  // })
+  
   data.forEach(d => {
-    d.num_colonies = +d.num_colonies
+    d.year = +d.year
+    d.total = +d.total
   })
+  
   render(data);
 });
