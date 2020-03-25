@@ -13,11 +13,22 @@
   <div>
     <p>Save the Honey is an interactive visualization of bee populations in recent years</p>
     <p>Scroll over to see more data on a specific year</p>
+    <p>Click on a year to see data from each state</p>
   </div>
 
   <p>honey bee graph here</p>
 
-  <svg width="960" height="750"></svg>
+  <div class="svg-container">
+    <svg class="svg" width="700" height="600"></svg>
+  </div>
+
+  <div class="notes">
+    <p>* Honey producing colonies are the maximum number of colonies from which honey was harvested during the year. It is
+      possible to harvest honey from colonies which did not survive the entire year.</p>
+    <p>** Alaska, Connecticut, Delaware, Maryland, Massachusetts, Nevada, New Hampshire, New Mexico, Oklahoma, and Rhode Island
+      not published separately to avoid disclosing data for individual operations.</p>
+  </div>
+  
   <script src="bundle.js"></script>
 </body>
 </html>
