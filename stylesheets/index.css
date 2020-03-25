@@ -5,7 +5,7 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-rect {
+circle {
   fill: white;
   stroke: black;
 }

@@ -3,7 +3,7 @@ import {
   csv, 
   scaleLinear, 
   max, 
-  scaleBand, 
+  scalePoint, 
   axisLeft, 
   axisBottom,
   format
@@ -25,19 +25,24 @@ const render = data => {
   const xScale = scaleLinear()
     .domain([0, max(data, xValue )])
     .range([0, innerWidth])
+    .nice();
     
 
-  const yScale = scaleBand()
+  const yScale = scalePoint()
     .domain(data.map(yValue))
     .range([0, innerHeight])
-    .padding(0.2);
+    .padding(0.3);
     
   const g = svg.append('g')
     .attr('transform', `translate(${margin.left}, ${margin.top})`)
 
+
+  const yAxis = axisLeft(yScale)
+    .tickSize(-innerWidth)
+
   g.append('g')
-    .call(axisLeft(yScale))
-    .selectAll(`.domain, .tick line`)
+    .call(yAxis)
+    .select(`.domain`)
       .remove();
 
   const xAxis = axisBottom(xScale)
@@ -55,11 +60,11 @@ const render = data => {
     .attr('fill', 'black')
     .text('Population')
 
-  g.selectAll('rect').data(data)
-    .enter().append('rect')
-      .attr('y', d => yScale(yValue(d)))
-      .attr('width', d => xScale(xValue(d)))
-      .attr('height', yScale.bandwidth())
+  g.selectAll('circle').data(data)
+    .enter().append('circle')
+    .attr('cy', d => yScale(yValue(d)))
+      .attr('cx', d => xScale(xValue(d)))
+      .attr('r', 6)
 
   g.append('text')
     .attr('y', -10)
@@ -68,7 +73,7 @@ const render = data => {
 }
 
 
-csv('data.csv').then(data => {
+csv('./data/data.csv').then(data => {
   data.forEach(d => {
     d.num_colonies = +d.num_colonies
   })
