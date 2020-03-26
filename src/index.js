@@ -110,14 +110,10 @@ const render = data => {
 
   //Hover Effects
 
-  const focus = selection.selectAll('.container').data([null]);
-    const gEnter = g.enter()
-      .append('g')
-      .attr('class', 'container');
-    g.merge(g)
-      .attr('transform', `translate(${margin.left}, ${margin.top})`)
+  const focus = g.append('g')
+    .attr('class', 'focus')
 
-  focus.append('circle')
+  const beeCircle = focus.append('circle')
     .attr('r', 5)
     .attr('cx', xScale(selectedYear))
     .attr('cy', 0)
@@ -147,7 +143,8 @@ const render = data => {
       console.log(selectedYear);
       // console.log('--------');
       
-      
+      beeCircle.transition().duration(100)
+        .attr('cx', xScale(selectedYear))
     });
 
   console.log(selectedYear)
