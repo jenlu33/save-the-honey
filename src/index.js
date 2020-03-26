@@ -31,7 +31,11 @@ const render = data => {
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
-  const selectedYear = d => d.year
+  let selectedYear = 2010;
+  const setSelectedYear = year => {
+    selectedYear = year;
+    // render();
+  }
 
   const xScale = scaleLinear()
     .domain(extent(data, xValue))
@@ -106,8 +110,12 @@ const render = data => {
 
   //Hover Effects
 
-  const focus = g.append('g')
-    .attr('class', 'focus')
+  const focus = selection.selectAll('.container').data([null]);
+    const gEnter = g.enter()
+      .append('g')
+      .attr('class', 'container');
+    g.merge(g)
+      .attr('transform', `translate(${margin.left}, ${margin.top})`)
 
   focus.append('circle')
     .attr('r', 5)
@@ -120,14 +128,29 @@ const render = data => {
     .attr('height', innerWidth)
     .attr('fill', 'none')
     .attr('pointer-events', 'all')
+    // .on('mouseover', () => { 
+    //   const x = mouse(g.node())[0];
+    //   const hoverDate = xScale.invert(x);
+    //   focus
+    //     .attr('cx', hoverDate)
+    //  })
+    // .on('mouseout', () => { focus.style('display', 'none') })
     .on('mousemove', () => {
       const x = mouse(g.node())[0];
-      const hoverDate = xScale.invert(x);
-      console.log(Math.floor(hoverDate));
+      const hoverDate = Math.floor(xScale.invert(x));
+      // beeCircle.attr('cx', hoverDate)
+      //   .attr('r', 10)
+      //   .attr('cy', 0)
+      // console.log((hoverDate));
+      // console.log(selectedYear)
+      setSelectedYear(hoverDate)
+      console.log(selectedYear);
+      // console.log('--------');
+      
       
     });
 
-  
+  console.log(selectedYear)
   //graph title
   g.append('text')
     .attr('class', 'title')
