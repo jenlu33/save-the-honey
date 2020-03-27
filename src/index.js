@@ -16,8 +16,6 @@ const svg = select('svg');
 const width = +svg.attr('width');
 const height = +svg.attr('height');
 
-// const selectedYear = 2011;
-
 const render = data => {
   const title = 'Honey Producing Bee Colonies in the United States';
 
@@ -31,12 +29,18 @@ const render = data => {
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
-  let selectedYear = 2010;
+  let selectedYear = data[0].year; //start position for beeCircle
   const setSelectedYear = year => {
     selectedYear = year;
-    // render();
   }
 
+  let selectedPop = data[0].total;
+  const setSelectedPop = total => {
+    selectedPop = total
+  }
+  // console.log(selectedPop);
+  // console.log(data[0]);
+  
   const xScale = scaleLinear()
     .domain(extent(data, xValue))
     .range([0, innerWidth])
@@ -116,38 +120,51 @@ const render = data => {
   const beeCircle = focus.append('circle')
     .attr('r', 5)
     .attr('cx', xScale(selectedYear))
-    .attr('cy', 0)
-    // .attr('stroke', 'black')
+    .attr('cy', yScale(selectedPop))
 
   focus.append('rect')
     .attr('width', innerWidth)
     .attr('height', innerWidth)
     .attr('fill', 'none')
     .attr('pointer-events', 'all')
-    // .on('mouseover', () => { 
-    //   const x = mouse(g.node())[0];
-    //   const hoverDate = xScale.invert(x);
-    //   focus
-    //     .attr('cx', hoverDate)
-    //  })
-    // .on('mouseout', () => { focus.style('display', 'none') })
     .on('mousemove', () => {
-      const x = mouse(g.node())[0];
-      const hoverDate = Math.floor(xScale.invert(x));
-      // beeCircle.attr('cx', hoverDate)
-      //   .attr('r', 10)
-      //   .attr('cy', 0)
-      // console.log((hoverDate));
+      const x = mouse(g.node())[0];         //allows beeCircle to move along x axis with mouse
+      const hoverDate = xScale.invert(x);
+      const y = mouse(g.node())[1];        //allows beeCircle to move along y axis with mouse
+      // const hoverPop = yScale.invert(y);
+      // console.log(hoverPop);
+
+      setSelectedYear(hoverDate);
+      // console.log(hoverDate);
       // console.log(selectedYear)
-      setSelectedYear(hoverDate)
-      console.log(selectedYear);
-      // console.log('--------');
       
-      beeCircle.transition().duration(100)
+      beeCircle.transition().duration(10)
         .attr('cx', xScale(selectedYear))
+        // .attr('cy', yScale(selectedPop))
+
+       for (let i = 0; i < data.length; i++) {
+        //  if (data[i].year === Math.floor(selectedYear)) {
+        //    const newY = data[i].total
+        //    console.log(newY);
+           
+        //    beeCircle.transition().duration(10)
+        //     .attr('cy', yScale(data[i].total) )
+        //  }
+
+          if (data[i].year === Math.floor(hoverDate)) {
+            const newY = data[i].total
+            beeCircle.transition().duration(10)
+              .attr('cy', yScale(newY))
+            
+          }
+       }
+
     });
 
-  console.log(selectedYear)
+  
+    
+  // console.log(selectedYear)
+
   //graph title
   g.append('text')
     .attr('class', 'title')
