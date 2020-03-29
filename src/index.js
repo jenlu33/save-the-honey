@@ -123,8 +123,9 @@ const render = data => {
     .attr('cy', yScale(selectedPop))
 
   focus.append('rect')
+    .style('opacity', '0')
     .attr('width', innerWidth)
-    .attr('height', innerWidth)
+    .attr('height', innerHeight)
     .attr('fill', 'none')
     .attr('pointer-events', 'all')
     .on('mousemove', () => {
@@ -135,26 +136,13 @@ const render = data => {
       // console.log(hoverPop);
 
       setSelectedYear(hoverDate);
-      // console.log(hoverDate);
-      // console.log(selectedYear)
-      
-      beeCircle.transition().duration(10)
-        .attr('cx', xScale(selectedYear))
-        // .attr('cy', yScale(selectedPop))
 
        for (let i = 0; i < data.length; i++) {
-        //  if (data[i].year === Math.floor(selectedYear)) {
-        //    const newY = data[i].total
-        //    console.log(newY);
-           
-        //    beeCircle.transition().duration(10)
-        //     .attr('cy', yScale(data[i].total) )
-        //  }
-
           if (data[i].year === Math.floor(hoverDate)) {
             const newY = data[i].total
             beeCircle.transition().duration(10)
               .attr('cy', yScale(newY))
+              .attr('cx', xScale(selectedYear))
             
           }
        }
@@ -162,8 +150,6 @@ const render = data => {
     });
 
   
-    
-  // console.log(selectedYear)
 
   //graph title
   g.append('text')
