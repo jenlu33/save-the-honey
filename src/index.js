@@ -38,8 +38,6 @@ const render = data => {
   const setSelectedPop = total => {
     selectedPop = total
   }
-  // console.log(selectedPop);
-  // console.log(data[0]);
   
   const xScale = scaleLinear()
     .domain(extent(data, xValue))
@@ -160,18 +158,6 @@ const render = data => {
 
 
 csv('./data/yearly_pop.csv').then(data => {
-  // data.forEach(d => {
-  //   const year = Object.keys(d)
-  //   d.years = +d.years
-  // })
-
-  
-  // console.log(Object.values(data));
-  // console.log(data.columns.slice(1));
-
-  // data.columns.slice(1).forEach(year => {
-  //   year = +year
-  // })
   
   data.forEach(d => {
     d.year = +d.year
