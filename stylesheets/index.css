@@ -31,10 +31,6 @@ body {
 
 /* svg {
   border: 1px solid red;
-} */
-
-/* svg {
-  border: 1px solid red;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -69,7 +65,6 @@ svg > g > g:nth-child(2) > g > text {
 }
 
 .notes {
-  /* border: 1px solid blue; */
   font-size: 12px;
   min-width: 720px;
   margin: 0 40px;
